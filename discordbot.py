@@ -61,9 +61,9 @@ async def 切断(ctx):
             await ctx.voice_client.disconnect()
 
 @client.command()
-async def 辞書登録(ctx, *args):
+async def 辞書追加(ctx, *args):
     if len(args) < 2:
-        await ctx.send(f'「{prefix}辞書登録 単語 よみがな」で入力してください。')
+        await ctx.send(f'「{prefix}辞書追加 単語 よみがな」で入力してください。')
     else:
         with psycopg2.connect(database_url) as conn:
             with conn.cursor() as cur:
@@ -73,7 +73,7 @@ async def 辞書登録(ctx, *args):
                 sql = 'INSERT INTO dictionary (guildId, word, kana) VALUES (%s,%s,%s) ON CONFLICT (guildId, word) DO UPDATE SET kana = EXCLUDED.kana'
                 value = (guild_id, word, kana)
                 cur.execute(sql, value)
-                await ctx.send(f'辞書登録しました：{word}→{kana}\n')
+                await ctx.send(f'辞書追加しました：{word}→{kana}\n')
 
 @client.command()
 async def 辞書削除(ctx, arg):
@@ -88,7 +88,7 @@ async def 辞書削除(ctx, arg):
             rows = cur.fetchall()
 
             if len(rows) == 0:
-                await ctx.send(f'辞書登録されていません：{word}')
+                await ctx.send(f'辞書追加されていません：{word}')
             else:
                 sql = 'DELETE FROM dictionary WHERE guildId = %s and word = %s'
                 cur.execute(sql, value)
